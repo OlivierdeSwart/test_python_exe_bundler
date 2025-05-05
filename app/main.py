@@ -1,22 +1,69 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import streamlit as st
 import pandas as pd
 import io
 from app.report_generator import generate_report
 
+# Add root path for importing
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# ⬜ Force light mode and improve input visibility
+st.markdown("""
+    <style>
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    input {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+        border-radius: 0.5rem !important;
+        padding: 0.4rem !important;
+    }
+    .stButton > button {
+        border-radius: 0.5rem !important;
+        padding: 0.4rem 1rem !important;
+    }
+    .stTextInput, .stForm {
+        border-radius: 0.5rem !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 📤 Upload a CSV file
+st.subheader("📤 Upload Combined Dataset")
+uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+
+data_dir = os.path.join(os.path.dirname(__file__), "../data")
+combined_path = os.path.join(data_dir, "combined.csv")
+
+# Ensure /data directory exists
+os.makedirs(data_dir, exist_ok=True)
+
+# Check if any CSV already exists in /data
+existing_files = [f for f in os.listdir(data_dir) if f.endswith(".csv")]
+
+if uploaded_file:
+    if existing_files:
+        st.warning(f"⚠️ Existing file found: {existing_files[0]}. It will be overwritten as 'combined.csv'.")
+
+    # Save uploaded file as combined.csv
+    with open(combined_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    st.success("✅ File uploaded and saved as 'combined.csv'. Please refresh to load new data.")
+
 # ✅ Cache data load for better performance
 @st.cache_data
 def load_data():
-    return pd.read_csv('data/combined.csv', dtype={'entity_id': str})
+    return pd.read_csv(combined_path, dtype={'entity_id': str})
 
 # Load combined dataset once
 try:
     df = load_data()
 except FileNotFoundError:
-    st.error("⚠️ Combined data file not found at 'data/combined.csv'. Please run the combine script first.")
+    st.error("⚠️ Combined data file not found at 'data/combined.csv'. Please upload it above.")
     st.stop()
 
 # ✅ App title
