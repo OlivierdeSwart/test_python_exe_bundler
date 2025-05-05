@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+venv*/  # catches venv310, venv311, etc.
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environments
+.env
+.env.*
+
+# VSCode / IDEs
+.vscode/
+.idea/
+
+# Mac & Windows cruft
+.DS_Store
+Thumbs.db
+
+# PyInstaller logs and temporary files
+*.manifest
+*.tmp
+
+# Jupyter and IPython history
+.ipynb_checkpoints/
+*.ipynb
+profile_default/
+ipython_config.py
+
+# System-specific
+*.swp
+*.bak
+*.orig
