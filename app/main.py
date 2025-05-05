@@ -3,9 +3,9 @@ import os
 import streamlit as st
 import pandas as pd
 import io
-from app.report_generator import generate_report
+from report_generator import generate_report
 
-# Add root path for importing
+# Add root path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # ⬜ Force light mode and improve input visibility
@@ -32,38 +32,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 📤 Upload a CSV file
-st.subheader("📤 Upload Combined Dataset")
-uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
-
+# 🗂 Setup paths
 data_dir = os.path.join(os.path.dirname(__file__), "../data")
 combined_path = os.path.join(data_dir, "combined.csv")
-
-# Ensure /data directory exists
 os.makedirs(data_dir, exist_ok=True)
 
-# Check if any CSV already exists in /data
-existing_files = [f for f in os.listdir(data_dir) if f.endswith(".csv")]
+# 📁 Check if dataset exists
+if not os.path.exists(combined_path):
+    st.title("📤 Upload Required Dataset")
+    st.warning("Please manually place a CSV file named `combined.csv` into the `optium_capital-main/data/` folder.")
+    st.caption("🔹 Only one CSV file is expected.\n🔹 File must be named `combined.csv`.\n🔹 This is required to run the app.")
+    st.stop()
 
-if uploaded_file:
-    if existing_files:
-        st.warning(f"⚠️ Existing file found: {existing_files[0]}. It will be overwritten as 'combined.csv'.")
-
-    # Save uploaded file as combined.csv
-    with open(combined_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-    st.success("✅ File uploaded and saved as 'combined.csv'. Please refresh to load new data.")
-
-# ✅ Cache data load for better performance
+# ✅ Load data
 @st.cache_data
 def load_data():
     return pd.read_csv(combined_path, dtype={'entity_id': str})
 
-# Load combined dataset once
 try:
     df = load_data()
-except FileNotFoundError:
-    st.error("⚠️ Combined data file not found at 'data/combined.csv'. Please upload it above.")
+except Exception as e:
+    st.error(f"❌ Error loading data: {e}")
     st.stop()
 
 # ✅ App title
