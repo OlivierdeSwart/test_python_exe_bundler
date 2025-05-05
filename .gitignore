@@ -43,3 +43,5 @@ ipython_config.py
 *.swp
 *.bak
 *.orig
+
+*.csv
