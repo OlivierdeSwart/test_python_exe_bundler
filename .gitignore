@@ -9,7 +9,7 @@ venv*/  # catches venv310, venv311, etc.
 
 # Distribution / packaging
 build/
-dist/
+
 *.egg-info/
 *.spec
 
